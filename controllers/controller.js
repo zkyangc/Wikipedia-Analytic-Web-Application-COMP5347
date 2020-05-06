@@ -1,8 +1,8 @@
 
 const user = require('../models/user.js')
 
-exports.renderHomePage = (req,res)=>{ 
-    res.render("index")
+exports.renderHomePage = (req,res)=>{
+    res.render("main.ejs")
 }
 
 exports.renderRegisterPage = (req,res)=>{
