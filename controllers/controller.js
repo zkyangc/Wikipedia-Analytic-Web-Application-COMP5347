@@ -14,5 +14,5 @@ exports.renderloginPage = (req,res)=>{
 }
 
 exports.renderAnalyticPage = (req,res)=>{
-    res.render("main.ejs")
+    res.render("analytic.ejs")
 }
