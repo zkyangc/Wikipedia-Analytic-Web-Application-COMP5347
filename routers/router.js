@@ -17,11 +17,17 @@ router.post('/register',controller.getUserInformation);
 //login handle
 router.post('/login',controller.getAuthentication);
 
-//edit password page
+//edit password page - haven't logged in 
+router.get('/resetpassword-nologin', controller.renderResetpasswordPage); 
+
+//reset password handle - haven't logged in 
+router.post('/resetpassword-nologin',controller.getResetpasswordNoLogin);
+
+//edit password page - after login 
 router.get('/resetpassword',controller.ensureAuthenticated,controller.renderResetpasswordPage); 
 
-//reset password handle
-router.post('/resetpassword',controller.getResetpassword);
+//reset password handle - after login 
+router.post('/resetpassword',controller.ensureAuthenticated,controller.getResetpassword);
 
 //log out
 router.get('/logout',controller.ensureAuthenticated,controller.setLogout)

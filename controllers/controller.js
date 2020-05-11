@@ -48,10 +48,7 @@ exports.getUserInformation = (req,res)=>{
     //check password match (entered password is the same as comfirm password) 
     if(password !== password2){
         errors.push({msg: 'Password do not match'});
-    }
-
-    //check password length
-    if(password && password2 && password.length < 8){
+    }else if(password && password2 && password.length < 8){
         errors.push({msg: 'Password should be at least 8 characters'});
     }
 
@@ -148,25 +145,20 @@ exports.getAuthentication = (req,res,next)=>{
     })(req,res,next);  
 }
 
-//edit password
-exports.renderResetpasswordPage = (req,res)=>{
-    res.redirect('/resetpassword');
-}
-
 //render the reset password page
 exports.renderResetpasswordPage = (req,res)=>{
     res.render('resetpassword');
 }
 
-//change the password
+//change the password - when user already logged in 
 exports.getResetpassword = (req,res)=>{
-    const passwordold = req.body.passwordold;
+
     const password = req.body.password;
     const password2 = req.body.password2;
     const resetquestion = req.body.resetquestion;
     const errors = [];
 
-    if( !password || !password2 || !passwordold || !resetquestion){
+    if( !password || !password2 || !resetquestion){
         errors.push({msg: 'Please fill in the required field'});
     }
     
@@ -179,35 +171,77 @@ exports.getResetpassword = (req,res)=>{
     if(errors.length > 0){
         res.render('resetpassword',{
             errors:errors,
-            passwordold:passwordold,
             password:password,
             password2:password2,
             resetquestion: resetquestion
          });
 
     }else{
-        //check whehther entered a correct password
-        User.comparePassword(passwordold,user.password, function(err,isMatch){
+        User.compareResetquestion(resetquestion,user.resetquestion,function(err,resetquestionMatch){
             if(err) throw err;
-            if(isMatch){
+            //check security question
+            if(resetquestionMatch){
+                User.editPassword(password,user);
+                req.logout();
+                req.flash('success_msg' , 'Your password has been changed, please log in');
+                res.redirect('/login');   
+            }else{
+                req.flash('error_msg' , 'Incorrect security question answer entered');
+                res.redirect('/resetpassword');
+            } 
+        });
+    }
+}
+
+//reset password - haven't log in 
+exports.getResetpasswordNoLogin = (req,res) =>{
+
+    const email = req.body.email;
+    const password = req.body.password;
+    const password2 = req.body.password2;
+    const resetquestion = req.body.resetquestion;
+    const errors = [];
+
+    if( !password || !password2 || !resetquestion){
+        errors.push({msg: 'Please fill in the required field'});
+    }
+    
+    if(password !== password2){
+        errors.push({msg: 'Password do not match'});
+    }else if(password && password2 && password.length < 8){
+        errors.push({msg: 'Password should be at least 8 characters'});
+    }
+
+    if(errors.length > 0){
+        res.render('resetpassword',{
+            errors:errors,
+            password:password,
+            password2:password2,
+            resetquestion: resetquestion
+         });
+
+    }else{
+        User.findOne({email: email})
+            .then(user =>{
+                if(user){
                 User.compareResetquestion(resetquestion,user.resetquestion,function(err,resetquestionMatch){
                     if(err) throw err;
                     //check security question
                     if(resetquestionMatch){
-                        User.editPassword(password,user);
-                        req.logout();
+                        User.editPassword(password,user);         
                         req.flash('success_msg' , 'Your password has been changed, please log in');
                         res.redirect('/login');   
                     }else{
                         req.flash('error_msg' , 'Incorrect security question answer entered');
-                        res.redirect('/resetpassword');
+                        res.redirect('/resetpassword-nologin');
                     }
                 });
-            }else{
-                req.flash('error_msg' , 'Incorrect Password');
-                res.redirect('/resetpassword');
+                }else{
+                    req.flash('error_msg' , 'Invalid user, please register');
+                    res.redirect('/resetpassword-nologin');
                 }
-        });
+            }
+        );
     }
 }
 
