@@ -34,7 +34,10 @@ module.exports.initializeDbFromFile = function(options){
   }
 
   // drop the old collection
-  //mongoose.connection.db.dropCollection('revisions');
+  mongoose.connection.db.dropCollection('revisions');
+  mongoose.connection.db.dropCollection('articles');
+  mongoose.connection.db.dropCollection('yearcounts');
+  mongoose.connection.db.dropCollection('authors');
 
   const dir = fs.opendirSync(revisionsDir.path)
   let dirent;
