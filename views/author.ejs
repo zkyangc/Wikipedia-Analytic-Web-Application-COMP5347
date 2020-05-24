@@ -1,0 +1,58 @@
+<div class="jumbotron">
+    <div class="container">
+      <h1 class="text-center display-1">Author Analytics</h1>
+    </div>
+</div>
+
+<main role="main">
+    <div class="row mt-5">
+        <div class="col-md-6 m-auto">
+                <div class="container" id="overallPageTopInformation">
+                <p class="lead mb-3">Please enter the author's name:</p>
+                <form action = "/author" method = "post"> 
+                    <input name="serchText" type="text" id="authorSearch"/>
+                    <button class="btn btn-secondary" id="authorSearchButton">Search</button>
+                </form>
+                <% if(typeof data != 'undefined') {%>
+                <div class="col">
+                    <p class="lead mb-3">The author's Articles:</p>
+                    <div id="ArticlesInformation">
+                        <table> 
+                            <% for (var i = 0; i < data.length;  i++) { %>
+                                <tr>
+                                    <td valign="top"><%= data[i].title %></td>
+                                    <td valign="top"><%= data[i].rev_count %></td>
+                                    <td valign="top"><input type="checkbox" id="checkbox<%= i %>" onclick="unhidden<%= i %>()"></td>
+                                    <td style="display:none" id="time<%= i %>">
+                                        <% for (var j = 0; j < data[i].rev.length; j++) { %>
+                                        <%= data[i].rev[j] %> <br>
+                                        <% } %>
+                                    </td>
+                                </tr> 
+                               <script>
+                                   function unhidden<%= i %>() {
+                                        var checkBox = document.getElementById("checkbox<%= i %>");
+                                        var tbd = document.getElementById("time<%= i %>");
+                                        // If the checkbox is checked, display the rev date
+                                        if (checkBox.checked == true){
+                                            tbd.style.display = "block";
+                                        } else {
+                                            tbd.style.display = "none";
+                                        }
+                                    }
+                               </script>
+                            <% } %>
+                        </table>
+                    </div>
+                    <div id="Timestamps"></div>
+                </div>
+                <% }else{  %>
+                    <div class="col">
+                        <p class="lead mb-3">The name you type does not exist.</p>
+                    </div>
+                 <% } %>
+            </div>
+        </div>
+    </div>
+
+</main>

@@ -1,0 +1,236 @@
+<div class="jumbotron">
+    <div class="container">
+      <h1 class="text-center display-1">Individual Analytics</h1>
+    </div>
+</div>
+<main role="main">
+    <div class="row mt-5">
+        <div class="col-md-6 m-auto">
+                <div class="container" id="individualPageInformation">
+                    <p class="lead mb-3">Please choose the article name:</p>
+
+                    <form action = "/individual" method = "post"> 
+                        <select name="overallChartSelect" id="overallChartSelect">
+                            <% for (var i = 0; i < articleList.length;  i++) { %>
+                                <option value="<%= articleList[i].title %>"><%= articleList[i].title %></option>
+                            <% } %>
+                        </select>
+
+                        <p class="lead mb-3">Please choose the time span:</p>
+                        <p class="lead mb-3">From : <input type="month" id="dateStart" name="start" min="1970-01" value="2018-05"/></p>
+                        <p class="lead mb-3">To : <input type="month" id="dateEnd" name="end" min="1970-01" value="2020-05"/></p>
+                        <button class="btn btn-secondary" id="articlesShownButton">Submit</button>
+                    </form> 
+                    <% if(typeof info != 'undefined') {%>
+                    <div class="col">
+                        <p class="lead mb-3">Article title: <%= info.title %> </p>
+                        <div id="SelectionName"></div>
+                    </div>
+
+                    <div class="col">
+                        <p class="lead mb-3">The total number of revisions during the given time span: <%= info.count %></p>
+                        <div id="TotalNumber"></div>
+                    </div>
+
+                    <div class="col">
+                        <p class="lead mb-3">The top 5 regular users ranked by total revision numbers on your selection:<br></p>
+                        <table>                
+                            <% for (var i = 0; i < info.revRank.length;  i++) { %>
+                            <tr>
+                            <td><%= info.revRank[i].user %></td>
+                            <td><%= info.revRank[i].revCount %></td>
+                            </tr>    
+                            <% } %>
+                        </table> <br>
+                        <div id="TopRanked"></div>
+                    </div>
+
+                    <div class="col">
+                        <p class="lead mb-3">The top 3 news of your selection:</p>
+                        <div id="TopNews"></div>
+                    </div>
+
+
+                    <div class="col">
+                        <h2 class="display-4">Charts</h2>
+                        <div class="col-12">
+                          
+
+                            <p class="lead mb-3"> </p>
+                            <div id="individualChart1"></div>
+
+                        </div>
+                    </div>
+
+                    <table>                
+                        <tr>
+                        <td><canvas id="chart_canvas1" width="300" height="300"></canvas></td>
+                        <td><canvas id="chart_canvas2" width="300" height="300"></canvas></td>
+                        <td>
+                            <select name="userSelect" id="userSelect" onchange="logSel()">
+                                <% for (var i = 0; i < info.revRank.length;  i++) { %>
+                                    "<option value="<%- i %>"><%= info.revRank[i].user %></option>
+                                <% } %>
+                            </select><br><canvas id="chart_canvas3" width="300" height="300"></canvas> 
+                        </td>
+                        </tr>    
+                    </table>                     
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+                    <script>
+                        function plotpie(ctx,input_values, input_labels){
+                            new Chart(ctx, {
+                                type: "pie",
+                                data: {
+                                labels: input_labels,
+                                datasets: [{
+                                    label: "times",
+                                    backgroundColor: ["#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+                                    data: input_values
+                                }]
+                                },
+                                options: {
+                                    title: {
+                                        display: true,
+                                        text: 'revisions by different kind of users. '
+                                    },
+                                    responsive: false,
+
+                                    tooltips: {
+                                        callbacks: {
+                                            // percentage and format
+                                            label: function(tooltipItem, data) {
+                                                var dataset = data.datasets[tooltipItem.datasetIndex];
+                                                var d = data.labels[tooltipItem.datasetIndex];
+                                                var total = dataset.data.reduce(function(previousValue, currentValue, currentIndex, array) {
+                                                return previousValue + currentValue;
+                                                });
+                                                var currentValue = dataset.data[tooltipItem.index];
+                                                var currentLabel = data.labels[tooltipItem.index];
+                                                var percentage = Math.floor(((currentValue/total) * 10000)+0.5)/100;
+                                                return currentLabel+': '+currentValue+' ('+percentage + "%)";
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+
+                        function plotbar(ctx, chartType, input_labels, anon, administrator, bot, regularUser){
+                            new Chart(ctx, {
+                                type: "bar",
+                                
+                                data: {
+                                labels: input_labels,
+                                datasets: [
+                                    {
+                                    label: "administrator",
+                                    backgroundColor: "#8e5ea2",
+                                    fill : false,
+                                    data: administrator
+                                    },
+                                    {
+                                    label: "anon",
+                                    backgroundColor: "#3cba9f",
+                                    fill : false,
+                                    data: anon
+                                    },
+                                    {
+                                    label: "bot",
+                                    backgroundColor: "#e8c3b9",
+                                    fill : false,
+                                    data: bot
+                                    },
+                                    {
+                                    label: "regularUser",
+                                    backgroundColor: "#c45850",
+                                    fill : false,
+                                    data: regularUser
+                                    }
+                                ]
+                                },
+                                options: {
+                                    title: {
+                                        display: true,
+                                        text: 'revisions by different kind of users. '
+                                    },
+                                    responsive: false,
+                                    
+                                    scales: {
+                                        yAxes: [{
+                                            ticks: {
+                                                beginAtZero: true
+                                            }
+                                        }]
+                                    }
+                                }
+                            });
+                        }
+                        function plotsinglebar(ctx, input_values, input_labels){
+                            if (typeof myLineChart != 'undefined'){
+                                myLineChart.destroy()
+                            }
+                           
+                            myLineChart = new Chart(ctx, {
+                                type: "bar",
+                                
+                                data: {
+                                labels: input_labels,
+                                datasets: [
+                                    {
+                                    label: "chosen user",
+                                    backgroundColor: "#8e5ea2",
+                                    fill : false,
+                                    data: input_values
+                                    }
+                                ]
+                                },
+                                options: {
+                                    title: {
+                                        display: true,
+                                        text: 'revisions of the user chosen. '
+                                    },
+                                    responsive: false,
+                                    
+                                    scales: {
+                                        yAxes: [{
+                                            ticks: {
+                                                beginAtZero: true
+                                            }
+                                        }]
+                                    }
+                                }
+                            });
+                        }
+                        var ctx = document.getElementById("chart_canvas1");
+                        var chartType = "bar"
+                        var input_labels = "<%- info.barData.labels %>".split(',')
+                        var anon = "<%- info.barData.anon %>".split(',').map(x=>+x)
+                        var administrator = "<%- info.barData.administrator %>".split(',').map(x=>+x)
+                        var bot = "<%- info.barData.bot %>".split(',').map(x=>+x)
+                        var regularUser = "<%- info.barData.regularUser %>".split(',').map(x=>+x)
+                        plotbar(ctx, chartType, input_labels, anon, administrator, bot, regularUser)
+
+                        var ctx = document.getElementById("chart_canvas2");
+                        var input_values = "<%- info.pieData.values %>".split(',').map(x=>+x)
+                        var input_labels = "<%- info.pieData.labels %>".split(',')
+                        plotpie(ctx,input_values, input_labels)    
+
+                        name_idx = document.getElementById("userSelect").value
+                        var ctx = document.getElementById("chart_canvas3");
+                        var input_values = <%= info.rankUserStat %>[name_idx][1]
+                        var input_labels = <%= info.rankUserStat %>[name_idx][0]
+                        plotsinglebar(ctx, input_values, input_labels)
+
+                        function logSel(){
+                            name_idx = document.getElementById("userSelect").value
+                            var ctx = document.getElementById("chart_canvas3");
+                            var input_values = <%= info.rankUserStat %>[name_idx][1]
+                            var input_labels = <%= info.rankUserStat %>[name_idx][0]
+                            plotsinglebar(ctx, input_values, input_labels)
+                        }
+                    </script>
+                    <% } %>
+                </div>
+        </div>
+    </div>
+</main>

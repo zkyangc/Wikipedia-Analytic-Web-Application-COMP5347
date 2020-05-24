@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>myApp</title>
+        <title>Wikipedia Analytics</title>
         <link rel="stylesheet" href="/css/bootstrap.css" />
         <link rel="stylesheet" href="/css/style.css" />
 
@@ -9,7 +9,7 @@
 
     <body>
         <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-            <a class="navbar-brand">My App</a>
+            <a class="navbar-brand">Wikipedia Analytics</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
@@ -18,32 +18,33 @@
               <ul class="navbar-nav mr-auto">
 
                 <% if(user){ %>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/">DashBoard <span class="sr-only">(current)</span></a>
+                    <li class="nav-item active" >
+                        <a class="nav-link" href="/">Overall</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/individual">Individual</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/author">Author</a>
+                    </li>
+                    <li class="nav-item active">
                         <a class="nav-link" href="/resetpassword">Reset Password</a>
-                     </li>  
-                    <li class="nav-item">
+                    </li>
+                    <li class="nav-item active">
                         <a class="nav-link" href="/logout">Logout</a>
                     </li>
                 <% }else{ %>
-                    <li class="nav-item">
+                    <li class="nav-item active">
                         <a class="nav-link" href="/login">Login</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item active">
                         <a class="nav-link" href="/register">Register</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item active">
                         <a class="nav-link" href="/resetpassword-nologin">Reset Password</a>
                     </li>  
                     <% } %>
-            
               </ul>
-              <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-              </form>
             </div>
         </nav>
 

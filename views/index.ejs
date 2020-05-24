@@ -1,2 +1,245 @@
-<h1 class="mt-4">Dashboard</h1>
-<p class="lead mb-3">Welcome <%= firstname %></p>
+<div class="jumbotron">
+    <div class="container">
+      <h1 class="text-center display-1">Overall Analytics</h1>
+    </div>
+</div>
+<main role="main">
+    <div class="row mt-5">
+        <div class="col-md-6 m-auto">
+                <div class="container" id="overallPageTopInformation">
+                    <p class="lead mb-2"></p>
+                    <p class="lead mb-3">Please choose the number of top articles to be shown: (you can input a number from 1 to 12)</p>
+                    <form action = "/" method = "post"> 
+                        <input type="number" id="replyNumber" min="1" max = "12" pattern="[0-9]?[0-9]"  step="1" data-bind="value:replyNumber" id="articlesShownRange" name="number" value="2"/>
+                        <button class="btn btn-secondary" id="articlesShownButton" >Submit</button>
+                    </form>
+                    <% if(typeof high_rev != 'undefined') {%>
+                        <div class="col">
+                            <p class="lead mb-3">Highest number of revisions: </p> 
+                            <div id="HighestNumberRevisions">
+                                <table>                
+                                    <% for (var i = 0; i < high_rev.length;  i++) { %>
+                                    <tr>
+                                    <td><%= high_rev[i].title %></td>
+                                    <td><%= high_rev[i].revCount %></td>
+                                    </tr>    
+                                    <% } %>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <p class="lead mb-3">Lowest number of revisions: </p>
+                            <div id="LowestNumberRevisions">                            
+                                <table>                
+                                    <% for (var i = 0; i < low_rev.length;  i++) { %>
+                                    <tr>
+                                    <td><%= low_rev[i].title %></td>
+                                    <td><%= low_rev[i].revCount %></td>
+                                    </tr>    
+                                    <% } %>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <p class="lead mb-3">Edited by the largest group of registered users:</p>
+                            <div id="LargestGroupRegistered">
+                                <table>                
+                                    <% for (var i = 0; i < high_group.length;  i++) { %>
+                                    <tr>
+                                    <td><%= high_group[i].title %></td>
+                                    <td><%= high_group[i].groupCount %></td>
+                                    </tr>    
+                                    <% } %>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <p class="lead mb-3">Edited by the smallest group of registered users:</p>
+                            <div id="SmallestGroupRegistered">
+                                <table>                
+                                    <% for (var i = 0; i < low_group.length;i++) { %>
+                                    <tr>
+                                    <td><%= low_group[i].title %></td>
+                                    <td><%= low_group[i].groupCount %></td>
+                                    </tr>    
+                                    <% } %>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <p class="lead mb-3">Articles with the longest history:</p>
+                            <div id="LongestHistoryArticles">
+                                <table>                
+                                    <% for (var i = 0; i < long_hist.length; i++) { %>
+                                    <tr>
+                                    <td><%= long_hist[i].title %></td>
+                                    <td><%= long_hist[i].startDate %></td>
+                                    </tr>    
+                                    <% } %>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <p class="lead mb-3">Articles with the shortest history:</p>
+                            <div id="ShortestHistoryArticles">
+                                <table>                
+                                    <% for (var i = 0; i < shor_hist.length;  i++) { %>
+                                    <tr>
+                                    <td><%= shor_hist[i].title %></td>
+                                    <td><%= shor_hist[i].startDate %></td>
+                                    </tr>    
+                                    <% } %>
+                                </table>
+                            </div>
+                        </div>
+                    <% } %>
+
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+
+                    <div class="col">
+                        <h1 class="text-center display-6">Chart</h1>
+                        <form action = "/overall_plot" method = "post"> 
+                            <select name="overallChartSelect" id="overallChartSelect">
+                                <option value="bar">Revision Number Bar Chart</option>
+                                <option value="line">Revision Number Line Chart</option>
+                                <option value="pie">Revision Number Pie Chart</option>
+                            </select>
+                            <button class="btn btn-secondary" id="overallChartSelectButton">Show me the chart</button>
+                        </form>
+                        <div id="overallChart">
+                            <% if(typeof chart != 'undefined') {%>
+                                <canvas id="chart_canvas" width="750" height="500"></canvas>
+                                <script>
+                                    function plotpie(){
+                                        new Chart(ctx, {
+                                            type: "pie",
+                                            data: {
+                                            labels: input_labels,
+                                            datasets: [{
+                                                label: "times",
+                                                backgroundColor: ["#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+                                                data: input_values
+                                            }]
+                                            },
+                                            options: {
+                                                title: {
+                                                    display: true,
+                                                    text: 'revisions by different kind of users. '
+                                                },
+                                                responsive: false,
+
+                                                tooltips: {
+                                                    callbacks: {
+                                                        // percentage and format
+                                                        label: function(tooltipItem, data) {
+                                                            var dataset = data.datasets[tooltipItem.datasetIndex];
+                                                            var d = data.labels[tooltipItem.datasetIndex];
+                                                            var total = dataset.data.reduce(function(previousValue, currentValue, currentIndex, array) {
+                                                            return previousValue + currentValue;
+                                                            });
+                                                            var currentValue = dataset.data[tooltipItem.index];
+                                                            var currentLabel = data.labels[tooltipItem.index];
+                                                            var percentage = Math.floor(((currentValue/total) * 10000)+0.5)/100;
+                                                            return currentLabel+': '+currentValue+' ('+percentage + "%)";
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+
+                                    function plotbar(){
+                                        new Chart(ctx, {
+                                            type: chartType,
+                                            
+                                            data: {
+                                            labels: input_labels,
+                                            datasets: [
+                                                {
+                                                label: "anon",
+                                                backgroundColor: "#8e5ea2",
+                                                fill : false,
+                                                data: anon
+                                                },
+                                                {
+                                                label: "administrator",
+                                                backgroundColor: "#3cba9f",
+                                                fill : false,
+                                                data: administrator
+                                                },
+                                                {
+                                                label: "bot",
+                                                backgroundColor: "#e8c3b9",
+                                                fill : false,
+                                                data: bot
+                                                },
+                                                {
+                                                label: "regularUser",
+                                                backgroundColor: "#c45850",
+                                                fill : false,
+                                                data: regularUser
+                                                }
+                                            ]
+                                            },
+                                            options: {
+
+                                                
+                                                title: {
+                                                    display: true,
+                                                    text: 'revisions by different kind of users. '
+                                                },
+                                                responsive: false,
+                                                
+                                                scales: {
+                                                    yAxes: [{
+                                                        ticks: {
+                                                            beginAtZero: true
+                                                        }
+                                                    }]
+                                                }
+                                            }
+                                        });
+                                    }
+                                    console.log("<%- chart %>");
+                                    var ctx = document.getElementById("chart_canvas");
+                                    <% if(chart === 'bar' || chart === "line"){ %>
+                                        var chartType = "<%- chart %>"
+                                        var input_labels = "<%- labels %>".split(',')
+                                        var anon = "<%- anon %>".split(',').map(x=>+x)
+                                        var administrator = "<%- administrator %>".split(',').map(x=>+x)
+                                        var bot = "<%- bot %>".split(',').map(x=>+x)
+                                        var regularUser = "<%- regularUser %>".split(',').map(x=>+x)
+                                    <% } else { %>
+                                        var input_labels = "<%- labels %>".split(',')
+                                        var input_values = "<%- values %>".split(',').map(x=>+x)
+                                    <% } %>
+
+                                    if ("<%- chart %>" === "bar" || "<%- chart %>" === "line"){
+                                        
+                                        console.log(input_labels)
+                                        console.log(administrator)
+                                        plotbar();
+                                    
+                                    } else if ("<%- chart %>" === "pie"){
+
+                                        console.log(input_labels)
+                                        console.log(input_values)
+                                        plotpie(); 
+                                    }    
+                                </script>
+                            <% } %>    
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+
+</main>
+
+
+
