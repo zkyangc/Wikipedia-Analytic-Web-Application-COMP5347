@@ -2,8 +2,11 @@ const express = require('express')
 const router = express.Router()  
 const controller = require("../controllers/controller")
 
-//dashboard page, only the authenticated users are able to access
-router.get('/', controller.ensureAuthenticated,controller.renderHomePage);
+//dashboard page / overall page, only the authenticated users are able to access
+router.get('/', controller.ensureAuthenticated, controller.renderHomePage);
+router.get('/overall_plot', controller.ensureAuthenticated, controller.renderHomePage);
+router.post('/',  controller.getOverallArticles);
+router.post('/overall_plot',  controller.renderHomePagePlot);
 
 //register page 
 router.get('/register',controller.renderRegisterPage);
@@ -32,6 +35,19 @@ router.post('/resetpassword',controller.ensureAuthenticated,controller.getResetp
 //log out
 router.get('/logout',controller.ensureAuthenticated,controller.setLogout)
 
+//individual page Barnett
+router.get('/individual',controller.renderIndividualPage);
+router.post('/individual',  controller.getArticleInfo);
 
+//author page Barnett
+router.get('/author',controller.renderAuthorPage);
+router.post('/author',  controller.getAuthorInfo);
+
+
+//tempate page Barnett
+router.get('/tempate',controller.renderTempatePage);
+
+
+router.get('/init',controller.initializeDbFromFile);
 
 module.exports = router;

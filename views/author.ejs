@@ -1,0 +1,98 @@
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <a class="navbar-brand">Wikipdia Analytics</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+            <% if(user){ %>
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Overall</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/individual">Individual</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/author">Author <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/resetpassword">Reset Password</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout">Logout</a>
+                </li>
+            <% }else{ %>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/login">Login</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/register">Register</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/resetpassword-nologin">Reset Password</a>
+                </li>
+            <% } %>
+
+        </ul>
+    </div>
+</nav>
+
+<main role="main">
+    <div class="row">
+        <div class="col-md-12">
+            <% if(user) {%>
+                <div class="container" id="overallPageTopInformation">
+                <h1 class="display-2">Author Analytics</h1>
+                <p class="lead mb-3">Please enter the author's name:</p>
+
+                <form action = "/author" method = "post"> 
+                    <input name="serchText" type="text" id="authorSearch"/>
+                    <button class="btn btn-secondary" id="authorSearchButton">Search</button>
+                </form>
+                <% if(typeof data != 'undefined') {%>
+                <div class="col">
+                    <p class="lead mb-3">The author's Articles:</p>
+                    <div id="ArticlesInformation">
+                        <table> 
+                            <% for (var i = 0; i < data.length;  i++) { %>
+                                <tr>
+                                    <td valign="top"><%= data[i].title %></td>
+                                    <td valign="top"><%= data[i].rev_count %></td>
+                                    <td valign="top"><input type="checkbox" id="checkbox<%= i %>" onclick="unhidden<%= i %>()"></td>
+                                    <td style="display:none" id="time<%= i %>">
+                                        <% for (var j = 0; j < data[i].rev.length; j++) { %>
+                                        <%= data[i].rev[j] %> <br>
+                                        <% } %>
+                                    </td>
+                                </tr> 
+                               <script>
+                                   function unhidden<%= i %>() {
+                                        var checkBox = document.getElementById("checkbox<%= i %>");
+                                        var tbd = document.getElementById("time<%= i %>");
+                                        // If the checkbox is checked, display the rev date
+                                        if (checkBox.checked == true){
+                                            tbd.style.display = "block";
+                                        } else {
+                                            tbd.style.display = "none";
+                                        }
+                                    }
+                               </script>
+                            <% } %>
+                        </table>
+                    </div>
+                    <div id="Timestamps"></div>
+                </div>
+                <% }else{  %>
+                    <div class="col">
+                        <p class="lead mb-3">The name you type does not exist.</p>
+                    </div>
+                 <% } %>
+            </div>
+            <% } else{ %>
+                    <h1 class="display-2">Please Log In</h1>
+            <% } %>
+        </div>
+    </div>
+
+</main>

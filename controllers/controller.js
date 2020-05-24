@@ -1,6 +1,8 @@
 const User = require('../models/user.js')
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
+const revision = require('../models/revision.js')
+const query = require('../models/queryData.js')
 
 
 //only the autenticated users are able to access the dashboard
@@ -16,8 +18,64 @@ exports.ensureAuthenticated = (req,res,next)=>{
 
 //render the home page, only show up when logged in 
 exports.renderHomePage = (req,res)=>{ 
-    res.render("index",{firstname:req.user.firstname});
+    //res.render("index",{firstname:req.user.firstname});
+    res.render("index");
 }
+
+// get articles queried
+exports.getOverallArticles = (req,res)=>{ 
+    query.getOverallArticles(req).then((value) => {
+        res.render("index",value);
+    })
+    
+}
+
+//render the home page, only show up when logged in 
+exports.renderHomePagePlot = (req,res)=>{ 
+    //console.log(req.body.overallChartSelect)
+    query.getYearCount(req).then((value) => {
+        res.render("index", value)
+    })
+
+    //res.render("index", {chart: "bar", anon: anon, administrator: administrator, bot: bot, regularUser: regularUser, labels: y_labels});
+}
+
+//render the individual page Barnett
+exports.renderIndividualPage = (req,res)=>{
+    query.getArticleList(req).then((value) => {
+        res.render('individual', {articleList: value});
+    })
+}
+
+//render the individual page with article info
+exports.getArticleInfo = (req,res)=>{
+    query.getArticleList(req).then((article) => {
+        query.getArticleInfo(req).then((info) => {
+            console.log(info)
+            res.render('individual', {articleList: article, info: info});
+        })
+    })
+}
+
+//render the author page Barnett
+exports.renderAuthorPage = (req,res)=>{
+    res.render("author");
+}
+
+//render the author page with author info
+exports.getAuthorInfo = (req,res)=>{
+    query.getAuthorInfo(req).then((value) => {
+        console.log(value)
+        res.render('author', value);
+    })
+}
+
+//render the tempate page Barnett
+exports.renderTempatePage = (req,res)=>{
+    res.render("tempate");
+}
+
+
 
 //render the registration page
 exports.renderRegisterPage = (req,res)=>{
@@ -28,7 +86,6 @@ exports.renderRegisterPage = (req,res)=>{
 exports.renderloginPage = (req,res)=>{
     res.render("login");
 }
-
 
 //get data from user registration page
 exports.getUserInformation = (req,res)=>{
@@ -95,7 +152,7 @@ exports.getUserInformation = (req,res)=>{
                         console.log(user)
                     });
                     req.flash('success_msg','You are now registered and you can log in');
-                    res.redirect('/login');
+                    res.redirect('/login');k
                 } 
         });
     }
@@ -250,4 +307,13 @@ exports.setLogout = (req,res) =>{
     req.logout();
     req.flash('success_msg' , 'You are logged out');
     res.redirect('/login');
+}
+
+
+
+
+// call the function to initialize database 
+exports.initializeDbFromFile = (req,res)=>{
+    revision.initializeDbFromFile(req.query)
+    res.render("index");
 }
