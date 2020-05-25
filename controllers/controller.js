@@ -5,6 +5,7 @@ const revision = require('../models/revision.js')
 const query = require('../models/queryData.js')
 
 
+
 //only the autenticated users are able to access the dashboard
 exports.ensureAuthenticated = (req,res,next)=>{
     if(req.isAuthenticated()){
@@ -318,3 +319,6 @@ exports.initializeDbFromFile = (req,res)=>{
     revision.initializeDbFromFile(req.query)
     res.render("landingpage");
 }
+
+
+                    

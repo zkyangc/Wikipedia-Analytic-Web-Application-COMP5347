@@ -9,7 +9,7 @@
                 <div class="container" id="overallPageTopInformation">
                     <p class="lead mb-2"></p>
                     <p class="lead mb-3">Please choose the number of top articles to be shown: (you can input a number from 1 to 12)</p>
-                    <form action = "/" method = "post"> 
+                    <form action = "/overall-plot" method = "post"> 
                         <input type="number" id="replyNumber" min="1" max = "12" pattern="[0-9]?[0-9]"  step="1" data-bind="value:replyNumber" id="articlesShownRange" name="number" value="2"/>
                         <button class="btn btn-secondary" id="articlesShownButton" >Submit</button>
                     </form>
@@ -103,7 +103,7 @@
 
                     <div class="col">
                         <h1 class="text-center display-6">Chart</h1>
-                        <form action = "/overall_plot" method = "post"> 
+                        <form action = "/overall-plot2" method = "post"> 
                             <select name="overallChartSelect" id="overallChartSelect">
                                 <option value="bar">Revision Number Bar Chart</option>
                                 <option value="line">Revision Number Line Chart</option>
