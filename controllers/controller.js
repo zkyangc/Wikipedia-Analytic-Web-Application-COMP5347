@@ -3,6 +3,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const revision = require('../models/revision.js')
 const query = require('../models/queryData.js')
+const request = require('request')
 
 
 
@@ -54,11 +55,39 @@ exports.renderIndividualPage = (req,res)=>{
 
 //render the individual page with article info
 exports.getArticleInfo = (req,res)=>{
-    query.getArticleList(req).then((article) => {
-        query.getArticleInfo(req).then((info) => {
-            console.log(info)
-            res.render('individual', {articleList: article, info: info});
+    const userTitle =  req.body.overallChartSelect;
+    queryString = 'q='+userTitle
+    const parameters = [
+        queryString+'+AND+subreddit:news',
+        'sort=top',
+        'limit=3'
+    ]
+    const url = "https://www.reddit.com/search.json" + "?" + parameters.join("&");
+    const options = {
+        url: url,
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-Charset': 'utf-8'
+        }};
+    request(options, function (err, response, data){
+        if (err) {  
+            console.log('Error:', err);
+        } else if (res.statusCode !== 200) { 
+            console.log('Error status code:', res.statusCode);
+        } else { 
+            const json = JSON.parse(data);
+            
+            title_list = json.data.children.map(a => a.data.title)
+            url_list = json.data.children.map(a => a.data.url)
+            query.getArticleList(req).then((article) => {
+            query.getArticleInfo(req).then((info) => {
+                to_return = {articleList: article, info: info, news: {title: title_list,url: url_list}}
+                console.log(to_return.articleList)
+                res.render('individual', to_return);
+            })
         })
+        }
     })
 }
 

@@ -47,7 +47,17 @@
 
                     <div class="col">
                         <p class="lead mb-3">The top 3 news of your selection:</p>
-                        <div id="TopNews"></div>
+                        <div id="TopNews">
+                            <div id="TopNews">
+                                <table>                
+                                    <% for (var i = 0; i < news.title.length; i++) { %>
+                                    <tr>
+                                    <td><a href="<%=news.url[i]%>"> - <%= news.title[i] %></a></td>
+                                    </tr>    
+                                    <% } %>
+                                </table> <br>
+                            </div>
+                        </div>
                     </div>
 
 
