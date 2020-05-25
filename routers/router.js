@@ -2,14 +2,18 @@ const express = require('express')
 const router = express.Router()  
 const controller = require("../controllers/controller")
 
+
+//test
+router.post('/test',  controller.getNewsReddit);
+
 //dashboard page / overall page, only the authenticated users are able to access
-//router.get('/', controller.ensureAuthenticated, controller.renderHomePage);
-router.get('/overall-plot', controller.ensureAuthenticated, controller.renderHomePage);
-router.post('/overall-plot',  controller.getOverallArticles);
-router.post('/overall-plot2',  controller.renderHomePagePlot);
+router.get('/', controller.ensureAuthenticated, controller.renderHomePage);
+router.get('/overall_plot', controller.ensureAuthenticated, controller.renderHomePage);
+router.post('/',  controller.getOverallArticles);
+router.post('/overall_plot',  controller.renderHomePagePlot);
 
 //landing page
-router.get('/',controller.renderLandingPage);
+router.get('/landingpage',controller.renderLandingPage);
 
 //register page 
 router.get('/register',controller.renderRegisterPage);
@@ -41,7 +45,6 @@ router.get('/logout',controller.ensureAuthenticated,controller.setLogout)
 //individual page Barnett
 router.get('/individual',controller.ensureAuthenticated,controller.renderIndividualPage);
 router.post('/individual', controller.getArticleInfo);
-
 
 //author page Barnett
 router.get('/author',controller.ensureAuthenticated,controller.renderAuthorPage);

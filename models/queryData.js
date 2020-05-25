@@ -218,7 +218,6 @@ module.exports.getAuthorInfo= async function(options){
         console.log("no such name")
         return ({exist: false})
     }
-    //var rev =  await Revision.find({user: serchText, timestamp: {"$gte": startDate, "$lt": endDate}})
 
 }
 
