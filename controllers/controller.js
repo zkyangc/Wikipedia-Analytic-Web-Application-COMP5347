@@ -16,9 +16,13 @@ exports.ensureAuthenticated = (req,res,next)=>{
     }
 }
 
-//render the home page, only show up when logged in 
-exports.renderHomePage = (req,res)=>{ 
-    //res.render("index",{firstname:req.user.firstname});
+//render the landing page
+exports.renderLandingPage = (req,res)=>{
+    res.render("landingpage");
+}
+
+//render the home page, only show up when logged in
+exports.renderHomePage = (req,res)=>{
     res.render("index");
 }
 
@@ -309,11 +313,8 @@ exports.setLogout = (req,res) =>{
     res.redirect('/login');
 }
 
-
-
-
-// call the function to initialize database 
+// call the function to initialize database
 exports.initializeDbFromFile = (req,res)=>{
     revision.initializeDbFromFile(req.query)
-    res.render("login");
+    res.render("landingpage");
 }

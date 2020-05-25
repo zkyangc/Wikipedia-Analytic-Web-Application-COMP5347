@@ -8,6 +8,9 @@ router.get('/overall_plot', controller.ensureAuthenticated, controller.renderHom
 router.post('/',  controller.getOverallArticles);
 router.post('/overall_plot',  controller.renderHomePagePlot);
 
+//landing page
+router.get('/landingpage',controller.renderLandingPage);
+
 //register page 
 router.get('/register',controller.renderRegisterPage);
 
